@@ -1,22 +1,23 @@
-def build_faq_prompt(user_msg, faq):
+def build_faq_prompt(user_description, faq):
     return f"""
-You are a helpful support assistant.
+You are a support assistant.
 
-User question:
-{user_msg}
+Customer issue:
+{user_description}
 
 Relevant FAQ:
 Question: {faq.question}
 Answer: {faq.answer}
 
-Use the FAQ context and generate a clear helpful answer.
+Generate a helpful support response.
 """
 
-def build_direct_prompt(user_msg):
+def build_direct_prompt(user_description):
     return f"""
-You are a helpful support assistant.
+You are a support assistant.
 
-Answer this user query clearly and professionally:
+Customer issue:
+{user_description}
 
-{user_msg}
+Provide a clear support response.
 """

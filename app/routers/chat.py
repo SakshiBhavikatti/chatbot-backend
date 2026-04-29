@@ -18,6 +18,16 @@ async def chat(data: ChatRequest):
 
     faqs = [FAQItem(**faq) for faq in faq_data]
 
+    # 1. Exact FAQ match → return DB answer directly
+    for faq in faqs:
+        if faq.Question.strip().lower() == data.description.strip().lower():
+            return ChatResponse(
+                reply=faq.Answer,
+                matched_faq=faq.Question,
+                source="faq"
+            )
+
+    # 2. Keyword/partial FAQ match → use FAQ context + AI Core
     matched = match_faq(
         data.description,
         faqs
@@ -33,10 +43,11 @@ async def chat(data: ChatRequest):
 
         return ChatResponse(
             reply=reply,
-            matched_faq=matched.question,
+            matched_faq=matched.Question,
             source="faq+llm"
         )
 
+    # 3. No FAQ match → direct AI Core
     prompt = build_direct_prompt(
         data.description
     )

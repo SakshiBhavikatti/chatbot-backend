@@ -3,8 +3,8 @@ from typing import Optional
 
 
 class FAQItem(BaseModel):
-    question: str = Field(validation_alias="Question")
-    answer: str = Field(validation_alias="Answer")
+    Question: str 
+    Answer: str 
 
 
 class ChatRequest(BaseModel):

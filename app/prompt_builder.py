@@ -6,8 +6,8 @@ Customer issue:
 {user_description}
 
 Relevant FAQ:
-Question: {faq.question}
-Answer: {faq.answer}
+Question: {faq.Question}
+Answer: {faq.Answer}
 
 Generate a helpful support response.
 """

@@ -24,4 +24,3 @@ class IncidentCreate(BaseModel):
     priority: str
     description: str
     suggestion: Optional[str] = None
-    status: str

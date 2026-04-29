@@ -3,7 +3,7 @@ from app.schemas import IncidentCreate
 from app.services.capm_service import create_incident
 
 router = APIRouter(
-    prefix="/incidents",
+    prefix="/incident",
     tags=["Incident"]
 )
 
@@ -12,7 +12,6 @@ router = APIRouter(
 async def create_new_incident(data: IncidentCreate):
 
     payload = {
-        "incidentID": data.incident_id,
         "name": data.name,
         "email": data.email,
         "category": data.category,
@@ -22,5 +21,8 @@ async def create_new_incident(data: IncidentCreate):
     }
 
     response = await create_incident(payload)
-
-    return response
+    
+    return {
+        "message": "Incident created successfully",
+        "incident_id": response.get("ID")
+    }

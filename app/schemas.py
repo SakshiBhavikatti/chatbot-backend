@@ -18,7 +18,6 @@ class ChatResponse(BaseModel):
 
 
 class IncidentCreate(BaseModel):
-    incident_id: int
     name: str
     email: str
     category: str

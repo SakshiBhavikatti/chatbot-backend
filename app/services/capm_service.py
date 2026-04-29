@@ -72,3 +72,42 @@ async def create_incident(payload):
         response.raise_for_status()
 
         return response.json()
+    
+async def get_incident_by_id(incident_id):
+    token = await get_capm_token()
+
+    url = f"{CAPM_BASE_URL}{CAPM_INCIDENT_ENDPOINT}/{incident_id}"
+
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
+
+async def fetch_incident_by_id(incident_id: str):
+    token = await get_capm_token()
+
+    url = f"{CAPM_BASE_URL}{CAPM_INCIDENT_ENDPOINT}?$filter=ID eq '{incident_id}'"
+
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            url,
+            headers=headers
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+        items = data.get("value", [])
+
+        if not items:
+            return None
+
+        return items[0]

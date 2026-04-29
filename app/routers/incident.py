@@ -12,6 +12,7 @@ router = APIRouter(
 async def create_new_incident(data: IncidentCreate):
 
     payload = {
+        "incidentID": data.incident_id,
         "name": data.name,
         "email": data.email,
         "category": data.category,

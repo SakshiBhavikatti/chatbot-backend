@@ -57,9 +57,18 @@ async def chat(data: ChatRequest):
                 source="faq"
             )
 
-    matched = match_faq(user_text, faqs)
+    matched, score = match_faq(user_text, faqs)
 
-    if matched:
+    # Strong similar match → DB direct
+    if matched and score >= 90:
+        return ChatResponse(
+            reply=matched.Answer,
+            matched_faq=matched.Question,
+            source="faq"
+        )
+
+    # Medium similar match → FAQ + LLM
+    if matched and score >= 70:
         prompt = build_faq_prompt(user_text, matched)
         reply = ask_claude(prompt)
 

@@ -9,7 +9,11 @@ Relevant FAQ:
 Question: {faq.Question}
 Answer: {faq.Answer}
 
-Generate a helpful support response.
+Instructions:
+Answer ONLY using the FAQ answer above.
+Do not use outside knowledge.
+If the user asks only part of the FAQ, answer only that relevant part.
+Rephrase only for clarity.
 """
 
 def build_direct_prompt(user_description):

@@ -1,19 +1,30 @@
 from rapidfuzz import process, fuzz
 
-def match_faq(user_text, faqs, threshold=70):
+def match_faq(user_text, faqs, threshold=85):
     user_text_lower = user_text.lower().strip()
+    user_words = set(user_text_lower.split())
 
     # Exact or keyword match first
     for faq in faqs:
         faq_question_lower = faq.Question.lower().strip()
+        faq_words = set(faq_question_lower.split())
 
         # Exact match
         if faq_question_lower == user_text_lower:
-            return faq
+            return faq, 100
 
-        # Keyword/partial match
+        # Partial match
         if user_text_lower in faq_question_lower:
-            return faq
+            return faq, 95
+
+        # Keyword overlap boost
+        common_words = user_words.intersection(faq_words)
+
+        if len(common_words) >= 1:
+            score = fuzz.token_set_ratio(user_text, faq.Question)
+
+            if score >= threshold:
+                return faq, score
 
     # Fuzzy match fallback
     questions = [faq.Question for faq in faqs]
@@ -21,7 +32,7 @@ def match_faq(user_text, faqs, threshold=70):
     result = process.extractOne(
         user_text,
         questions,
-        scorer=fuzz.token_sort_ratio
+        scorer=fuzz.token_set_ratio
     )
 
     if result and result[1] >= threshold:
@@ -29,6 +40,6 @@ def match_faq(user_text, faqs, threshold=70):
 
         for faq in faqs:
             if faq.Question == matched_question:
-                return faq
+                return faq, result[1]
 
-    return None
+    return None, 0

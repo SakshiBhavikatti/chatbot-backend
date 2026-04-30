@@ -1,0 +1,8 @@
+---
+applications:
+  - name: chatbot-backend
+    memory: 512M
+    instances: 1
+    buildpacks:
+      - python_buildpack
+    path: .

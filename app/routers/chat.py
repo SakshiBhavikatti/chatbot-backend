@@ -18,6 +18,17 @@ async def chat(data: ChatRequest):
     user_text = data.description.strip()
 
     # ===============================
+    # 0. GREETING FLOW
+    # ===============================
+    greetings = ["hi", "hello", "hey", "thanks", "thank you", "ok", "okay", "bye"]
+
+    if user_text.lower() in greetings:
+        return ChatResponse(
+            reply="Hello! How can I assist you today?",
+            source="greeting"
+        )
+
+    # ===============================
     # 1. INCIDENT STATUS CHECK
     # ===============================
     incident_match = re.search(

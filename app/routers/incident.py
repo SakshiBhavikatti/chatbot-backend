@@ -17,7 +17,7 @@ async def create_new_incident(data: IncidentCreate):
         "category": data.category,
         "priority": data.priority,
         "description": data.description,
-        "suggestion": data.suggestion
+        "suggestions": data.suggestion
     }
 
     response = await create_incident(payload)

@@ -23,4 +23,4 @@ class IncidentCreate(BaseModel):
     category: str
     priority: str
     description: str
-    suggestion: Optional[str] = None
+    suggestions: Optional[str] = None

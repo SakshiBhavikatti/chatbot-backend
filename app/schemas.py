@@ -3,8 +3,8 @@ from typing import Optional
 
 
 class FAQItem(BaseModel):
-    Question: str 
-    Answer: str 
+    Questions: str 
+    Answers: str 
 
 
 class ChatRequest(BaseModel):

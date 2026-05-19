@@ -1,6 +1,7 @@
 import re
 from fastapi import APIRouter
 from app.schemas import ChatRequest, ChatResponse, FAQItem
+from app.services.embedding_service import semantic_search
 from app.services.capm_service import fetch_faqs, get_incident_by_id
 from app.faq_matcher import match_faq
 
@@ -90,38 +91,88 @@ async def chat(data: ChatRequest):
     faqs = [FAQItem(**faq) for faq in faq_data]
 
     # Exact match
+
     for faq in faqs:
-        if faq.Question.strip().lower() == user_text_lower:
+
+        if faq.Questions.strip().lower() == user_text_lower:
+
             return ChatResponse(
-                reply=faq.Answer,
-                matched_faq=faq.Question,
+                reply=faq.Answers,
+                matched_faq=faq.Questions,
                 source="faq"
             )
 
-    # Smart FAQ match
-    matched, score = match_faq(user_text, faqs)
+    # SEMANTIC SEARCH
 
-    # Strong match
-    if matched and score >= 85:
+    semantic_match, semantic_score = semantic_search(
+        user_text,
+        faqs
+    )
+
+    # FUZZY SEARCH
+
+    fuzzy_match, fuzzy_score = match_faq(
+        user_text,
+        faqs
+    )
+
+    matched = None
+    score = 0
+
+    # BOTH MATCH SAME FAQ
+
+    if (
+        semantic_match
+        and fuzzy_match
+        and semantic_match.Questions == fuzzy_match.Questions
+    ):
+
+        matched = semantic_match
+
+        score = max(
+            semantic_score,
+            fuzzy_score
+        ) + 10
+
+    # SEMANTIC STRONG MATCH
+
+    elif semantic_match and semantic_score >= 65:
+
+        matched = semantic_match
+        score = semantic_score
+
+    # FUZZY FALLBACK
+
+    elif fuzzy_match and fuzzy_score >= 60:
+
+        matched = fuzzy_match
+        score = fuzzy_score
+
+    # STRONG MATCH
+
+    if matched and score >= 75:
+
         return ChatResponse(
-            reply=matched.Answer,
-            matched_faq=matched.Question,
+            reply=matched.Answers,
+            matched_faq=matched.Questions,
             source="faq"
         )
 
-    # Medium match
-    if matched and score >= 70:
+    # MEDIUM MATCH
+
+    if matched and score >= 60:
+
         return ChatResponse(
             reply=(
                 "Based on the available SAP support knowledge:\n\n"
-                f"{matched.Answer}"
+                f"{matched.Answers}"
             ),
-            matched_faq=matched.Question,
+            matched_faq=matched.Questions,
             source="faq"
         )
 
     # 3. FALLBACK
-    
+
     return ChatResponse(
         reply=(
             "I cannot answer this question from the available "

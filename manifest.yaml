@@ -1,7 +1,8 @@
 ---
 applications:
   - name: imperial-chatbot-backend
-    memory: 512M
+    memory: 2G
+    disk_quota: 2G
     instances: 1
     buildpacks:
       - python_buildpack
